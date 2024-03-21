@@ -3,7 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './core/database/database.module';
+import { UsersModule } from './modules/users/users.module';
 import configuration from './core/config/configuration';
+import { usersRepository } from './modules/users/users.repository';
+import { UsersService } from './modules/users/users.service';
+import { UsersController } from './modules/users/users.controller';
 
 @Module({
   imports: [
@@ -13,8 +17,9 @@ import configuration from './core/config/configuration';
       envFilePath: ['.env.development', '.env.production'],
     }),
     DatabaseModule,
+    UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, UsersController],
+  providers: [...usersRepository, AppService, UsersService, AppService],
 })
 export class AppModule {}
