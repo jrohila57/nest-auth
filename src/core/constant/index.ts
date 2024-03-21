@@ -1,5 +1,9 @@
 import { LoggerService, LogLevel } from '@nestjs/common';
-
+export const SEQUELIZE = 'SEQUELIZE';
+export const DEVELOPMENT = 'development';
+export const TEST = 'test';
+export const PRODUCTION = 'production';
+export const USER_REPOSITORY = 'USER_REPOSITORY';
 export const LOG = 'log';
 export const FATAL = 'fatal';
 export const ERROR = 'error';
