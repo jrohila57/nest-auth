@@ -9,6 +9,6 @@ export class AppService {
     return this.configService.get<string>('PORT')!;
   }
   getHello(): string {
-    return 'Hello World!';
+    return `Server is Live!: ${this.configService.get<string>('PORT')!}`;
   }
 }
