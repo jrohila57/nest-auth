@@ -8,6 +8,9 @@ import configuration from './core/config/configuration';
 import { usersRepository } from './modules/users/users.repository';
 import { UsersService } from './modules/users/users.service';
 import { UsersController } from './modules/users/users.controller';
+import { AuthModule } from './modules/auth/auth.module';
+import { AuthController } from './modules/auth/auth.controller';
+import { AuthService } from './modules/auth/auth.service';
 
 @Module({
   imports: [
@@ -18,8 +21,9 @@ import { UsersController } from './modules/users/users.controller';
     }),
     DatabaseModule,
     UsersModule,
+    AuthModule,
   ],
-  controllers: [AppController, UsersController],
-  providers: [...usersRepository, AppService, UsersService, AppService],
+  controllers: [AppController, UsersController, AuthController],
+  providers: [...usersRepository, AppService, UsersService, AuthService],
 })
 export class AppModule {}

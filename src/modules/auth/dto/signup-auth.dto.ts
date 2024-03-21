@@ -1,9 +1,10 @@
 import { Gender, Role } from '@/core/constant/enum';
-export class CreateUserDto {
+
+export class SignUpAuthDto {
   readonly firstName: string;
-  readonly password: string;
   readonly lastName: string;
   readonly email: string;
+  readonly password: string;
   readonly phone: number;
   readonly role: Role;
   readonly gender: Gender;
