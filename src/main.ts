@@ -2,7 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LOGGER as logger } from './core/constant';
+import { DEVELOPMENT, LOGGER as logger, PRODUCTION } from './core/constant';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   try {
@@ -14,6 +15,18 @@ async function bootstrap() {
     const API_VERSION = config.get<string>('API_VERSION')!;
 
     app.setGlobalPrefix(API_VERSION);
+
+    const options = new DocumentBuilder()
+      .setTitle('CRUD API WITH AUTH')
+      .setDescription('Basic Auth Crud API with nest.js and sequlize')
+      .setVersion('1.0')
+      .addServer('http://localhost:3000/', DEVELOPMENT)
+      .addServer('https://localhost:3005/', PRODUCTION)
+      .build();
+
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup('docs', app, document);
+
     await app.listen(PORT);
 
     Logger.log(`Server is in ${NODE_ENV?.toUpperCase()} mode`, 'WEB');
