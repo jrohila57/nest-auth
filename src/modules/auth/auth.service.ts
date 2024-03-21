@@ -31,11 +31,14 @@ export class AuthService {
         Logger.log('Invalid credentials.');
         throw new UnauthorizedException('Invalid credentials');
       }
-      const passwordMatch = await bcrypt.compare(password, user.password);
+      const passwordMatch = await bcrypt.compare(
+        password,
+        user?.data?.password as string,
+      );
       if (!passwordMatch) {
         throw new UnauthorizedException('Invalid credentials');
       }
-      const token = this.jwtService.sign({ userId: user.id });
+      const token = this.jwtService.sign({ userId: user?.data?.id as number });
       Logger.log(`User with email ${email} signed in successfully`);
       return { token };
     } catch (error) {
@@ -86,7 +89,7 @@ export class AuthService {
         throw new UnauthorizedException('User not found');
       }
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await this.usersService.updateOneById(user.id, {
+      await this.usersService.updateOneById(user?.data?.id as number, {
         password: hashedPassword,
       });
       Logger.log(`Password reset successfully for user with email ${email}`);
