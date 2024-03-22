@@ -1,8 +1,9 @@
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript';
-import { SEQUELIZE } from '../constant';
+import { DATABASE, SEQUELIZE } from '../constant';
 import { Logger } from '@nestjs/common';
 import configuration from '../config/configuration';
-import { Users } from '@/modules/users/entities/user.entity';
+import { Users } from '@/modules/users/user.entity';
+import { MESSAGES } from '../constant/messages';
 
 export const databaseProviders = [
   {
@@ -14,10 +15,10 @@ export const databaseProviders = [
         sequelize.addModels([Users]);
         await sequelize.authenticate({ logging: true });
         await sequelize.sync();
-        Logger.log('Connection has been established successfully.', 'DATABASE');
+        Logger.log(MESSAGES.CONNECTION_ESTABLISHED, DATABASE);
         return sequelize;
       } catch (error: any) {
-        Logger.error('Unable to connect to the database:', error);
+        Logger.error(MESSAGES.UNABLE_TO_CONNECT, error);
       }
     },
   },

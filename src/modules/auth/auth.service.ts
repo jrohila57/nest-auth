@@ -7,95 +7,122 @@ import {
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { SignInAuthDto } from './dto/signin-auth.dto';
-import { SignUpAuthDto } from './dto/signup-auth.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+
+import {
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  SignInAuthDto,
+  SignUpAuthDto,
+} from './auth.dto';
+import { ConfigService } from '@nestjs/config';
+import { MESSAGES } from '@/core/constant/messages';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async signIn(signInDto: SignInAuthDto) {
+  async signIn(payload: SignInAuthDto) {
     try {
-      const { email, password } = signInDto;
+      const config = this.configService;
+      const { email, password } = payload;
       if (!email || !password) {
-        Logger.log('Email and password are required.');
-        throw new BadRequestException('Email and password are required.');
+        Logger.log(MESSAGES.EMAIL_PASSWORD_REQUIRED);
+        throw new BadRequestException(MESSAGES.EMAIL_PASSWORD_REQUIRED);
       }
       const user = await this.usersService.findOneByEmail(email);
-      if (!user) {
-        Logger.log('Invalid credentials.');
-        throw new UnauthorizedException('Invalid credentials');
+      if (user.success == false) {
+        Logger.log(MESSAGES.INVALID_CREDENTIALS);
+        throw new UnauthorizedException(MESSAGES.INVALID_CREDENTIALS);
+      } else {
+        const passwordMatch = await bcrypt.compare(
+          password,
+          user?.data?.password as string,
+        );
+
+        if (!passwordMatch) {
+          throw new UnauthorizedException(MESSAGES.INVALID_CREDENTIALS);
+        }
+        const payload = {
+          sub: user.data?.id as number,
+          username: user.data?.email,
+        };
+        const token = await this.jwtService.signAsync(payload);
+        Logger.log(MESSAGES.SIGN_IN);
+        return { success: true, message: MESSAGES.SIGN_IN, token };
       }
-      const passwordMatch = await bcrypt.compare(
-        password,
-        user?.data?.password as string,
-      );
-      if (!passwordMatch) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
-      const token = this.jwtService.sign({ userId: user?.data?.id as number });
-      Logger.log(`User with email ${email} signed in successfully`);
-      return { token };
     } catch (error) {
       Logger.error(`Error during sign in: ${error.message}`);
-      throw error;
+      return { success: false, message: error.message };
     }
   }
 
-  async signUp(signUpDto: SignUpAuthDto) {
+  async signUp(payload: SignUpAuthDto) {
     try {
-      const { email, password } = signUpDto;
+      const { email, password } = payload;
       const existingUser = await this.usersService.findOneByEmail(email);
-      if (existingUser) {
-        throw new UnauthorizedException('User already exists');
+      if (existingUser.success == true) {
+        return { success: false, message: MESSAGES.USER_ALREADY_EXISTS };
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await this.usersService.create({
-        ...signUpDto,
+        ...payload,
         password: hashedPassword,
       });
-      Logger.log(`User with email ${email} signed up successfully`);
-      return newUser;
+      Logger.log(MESSAGES.SIGN_UP_SUCCESS);
+      console.log(newUser);
+      return {
+        success: true,
+        message: MESSAGES?.SIGN_UP_SUCCESS,
+        data: newUser.data,
+      };
     } catch (error) {
       Logger.error(`Error during sign up: ${error.message}`);
-      throw error;
-    }
-  }
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    try {
-      const { email } = forgotPasswordDto;
-      const user = await this.usersService.findOneByEmail(email);
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-      Logger.log(`Password reset link sent to ${email}`);
-    } catch (error) {
-      Logger.error(`Error during forgot password: ${error.message}`);
-      throw error;
+      return { success: false, message: MESSAGES.USER_ALREADY_EXISTS };
     }
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+  async forgotPassword(payload: ForgotPasswordDto) {
     try {
-      const { email, newPassword } = resetPasswordDto;
+      const { email } = payload;
       const user = await this.usersService.findOneByEmail(email);
       if (!user) {
-        Logger.error('User not found');
-        throw new UnauthorizedException('User not found');
+        throw new UnauthorizedException(MESSAGES.USER_NOT_FOUND);
+      }
+      Logger.log(MESSAGES.PASSWORD_RESET_LINK_SENT);
+      return {
+        success: true,
+        message: MESSAGES.PASSWORD_RESET_LINK_SENT,
+      };
+    } catch (error) {
+      Logger.error(`Error during forgot password: ${error.message}`);
+      return { success: false, message: MESSAGES.USER_NOT_FOUND };
+    }
+  }
+
+  async resetPassword(payload: ResetPasswordDto) {
+    try {
+      const { email, newPassword } = payload;
+      const user = await this.usersService.findOneByEmail(email);
+      if (!user) {
+        Logger.error(MESSAGES.USER_NOT_FOUND);
+        throw new UnauthorizedException(MESSAGES.USER_NOT_FOUND);
       }
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await this.usersService.updateOneById(user?.data?.id as number, {
         password: hashedPassword,
       });
-      Logger.log(`Password reset successfully for user with email ${email}`);
+      Logger.log(MESSAGES.PASSWORD_RESET_SUCCESS);
+      return {
+        success: true,
+        message: MESSAGES.PASSWORD_RESET_SUCCESS,
+      };
     } catch (error) {
       Logger.error(`Error during password reset: ${error.message}`);
-      throw error;
+      return { success: false, message: MESSAGES.PASSWORD_RESET_FAILED };
     }
   }
 }
