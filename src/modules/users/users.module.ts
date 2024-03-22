@@ -9,6 +9,4 @@ import { usersRepository } from './users.repository';
   controllers: [UsersController],
   exports: [UsersService],
 })
-export class UsersModule {
-  constructor(private usersService: UsersService) {}
-}
+export class UsersModule {}
