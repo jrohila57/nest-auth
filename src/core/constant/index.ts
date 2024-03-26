@@ -4,6 +4,7 @@ import { LoggerService, LogLevel } from '@nestjs/common';
 export const SEQUELIZE = 'SEQUELIZE';
 export const DATABASE = 'DATABASE';
 export const USER_REPOSITORY = 'USER_REPOSITORY';
+export const OTP_REPOSITORY = 'OTP_REPOSITORY';
 
 // Environment Constants
 export const DEVELOPMENT = 'development';
@@ -32,3 +33,8 @@ export const OTHER = 'other';
 // Role Constants
 export const ADMIN = 'admin';
 export const USER = 'user';
+
+//
+export const RESET = 'RESET';
+export const FORGOT = 'FORGOT';
+export const VERIFY = 'VERIFY';

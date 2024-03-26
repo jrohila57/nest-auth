@@ -31,6 +31,11 @@ export const userProperties = {
     required: true,
     description: 'The gender of the user.',
   },
+  isVerified: {
+    example: 'true',
+    required: false,
+    description: 'Email verified or not',
+  },
   dob: {
     example: '1990-01-01',
     required: true,

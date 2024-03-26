@@ -6,10 +6,11 @@ import {
   IsEnum,
   IsDate,
   MinLength,
+  IsBoolean,
 } from 'class-validator';
 import { Gender, Role } from '@/core/constant/enum';
 import { authProperties } from './auth.properties';
-import { MESSAGES } from '@/core/constant/messages';
+import MESSAGE from '@/core/constant/messages';
 
 export class SignUpAuthDto {
   @ApiProperty(authProperties.firstName)
@@ -27,6 +28,9 @@ export class SignUpAuthDto {
   @ApiProperty(authProperties.password)
   @IsString()
   readonly password: string;
+
+  @IsBoolean()
+  readonly isVerified: boolean;
 
   @ApiProperty(authProperties.phone)
   @IsPhoneNumber()
@@ -58,7 +62,7 @@ export class ResetPasswordDto {
 
   @ApiProperty(authProperties.password)
   @IsString()
-  @MinLength(8, { message: MESSAGES.MIN_PASSWORD_LENGTH })
+  @MinLength(8, { message: MESSAGE.AUTH.ERROR.INVALID_CREDENTIALS })
   readonly newPassword: string;
 }
 

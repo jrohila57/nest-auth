@@ -26,6 +26,12 @@ export class Users extends Model<Users> {
   password: string;
 
   @Column({
+    type: DataType.BOOLEAN,
+    defaultValue: false,
+  })
+  isVerified: boolean;
+
+  @Column({
     type: DataType.STRING,
     unique: true,
   })

@@ -5,6 +5,7 @@ import {
   IsPhoneNumber,
   IsEnum,
   IsDate,
+  IsBoolean,
   IsOptional,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
@@ -32,6 +33,9 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsPhoneNumber()
   readonly phone: number;
+
+  @IsBoolean()
+  readonly isVerified: boolean;
 
   @ApiProperty(userProperties.role)
   @IsNotEmpty()
@@ -70,6 +74,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsString()
   readonly lastName?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  readonly isVerified?: boolean;
 
   @ApiProperty(userProperties.email)
   @IsOptional()

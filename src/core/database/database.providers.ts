@@ -3,7 +3,8 @@ import { DATABASE, SEQUELIZE } from '../constant';
 import { Logger } from '@nestjs/common';
 import configuration from '../config/configuration';
 import { Users } from '@/modules/users/user.entity';
-import { MESSAGES } from '../constant/messages';
+import { Otp } from '@/modules/otp/otp.entity';
+import MESSAGE from '../constant/messages';
 
 export const databaseProviders = [
   {
@@ -12,13 +13,13 @@ export const databaseProviders = [
       try {
         const config: SequelizeOptions = configuration().database;
         const sequelize = new Sequelize(config);
-        sequelize.addModels([Users]);
+        sequelize.addModels([Users, Otp]);
         await sequelize.authenticate({ logging: true });
         await sequelize.sync();
-        Logger.log(MESSAGES.CONNECTION_ESTABLISHED, DATABASE);
+        Logger.log(MESSAGE.USER.SUCCESS.DATA_RETRIEVED, DATABASE);
         return sequelize;
       } catch (error: any) {
-        Logger.error(MESSAGES.UNABLE_TO_CONNECT, error);
+        Logger.error(MESSAGE.USER.ERROR.DATABASE_ERROR, error);
       }
     },
   },

@@ -38,6 +38,12 @@ dependencies:
   class-validator:
     specifier: ^0.14.1
     version: 0.14.1
+  otp-generator:
+    specifier: ^4.0.1
+    version: 4.0.1
+  otp-generator-random:
+    specifier: ^1.0.0
+    version: 1.0.0
   pg:
     specifier: ^8.11.3
     version: 8.11.3
@@ -82,6 +88,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.3.1
     version: 20.11.30
+  '@types/otp-generator':
+    specifier: ^4.0.2
+    version: 4.0.2
   '@types/sequelize':
     specifier: ^4.28.20
     version: 4.28.20
@@ -1396,6 +1405,10 @@ packages:
     resolution: {integrity: sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==}
     dependencies:
       undici-types: 5.26.5
+
+  /@types/otp-generator@4.0.2:
+    resolution: {integrity: sha512-9+qqWzuFb332hXPbLgjUyOXlbcaTQkmkmqQjTduvNuOmPV5fW+iLv70JsVEhdUy0DWi4kY34++HDCaWl6N0AYg==}
+    dev: true
 
   /@types/qs@6.9.14:
     resolution: {integrity: sha512-5khscbd3SwWMhFqylJBLQ0zIu7c1K6Vz0uBIt915BI3zV0q1nfjRQD3RqSBcPaO6PHEF4ov/t9y89fSiyThlPA==}
@@ -4342,6 +4355,15 @@ packages:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /otp-generator-random@1.0.0:
+    resolution: {integrity: sha512-NrZlBiQmq+K2jW/z82k6szVpLsjZ8VDTLxcjM94XCJAU8+bvG2DZGaVG2xyHxSmRKpFpWP2zEkKeoaa1awqzQQ==}
+    dev: false
+
+  /otp-generator@4.0.1:
+    resolution: {integrity: sha512-2TJ52vUftA0+J3eque4wwVtpaL4/NdIXDL0gFWFJFVUAZwAN7+9tltMhL7GCNYaHJtuONoier8Hayyj4HLbSag==}
+    engines: {node: '>=14.10.0'}
+    dev: false
 
   /p-limit@2.3.0:
     resolution: {integrity: sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==}

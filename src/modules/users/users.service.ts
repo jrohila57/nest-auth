@@ -2,10 +2,12 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Users } from './user.entity';
 import { USER_REPOSITORY } from '@/core/constant';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
-import { MESSAGES } from '@/core/constant/messages';
+import MESSAGE from '@/core/constant/messages';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @Inject(USER_REPOSITORY) private readonly usersProviders: typeof Users,
   ) {}
@@ -13,13 +15,17 @@ export class UsersService {
   async findAll() {
     try {
       const users = await this.usersProviders.findAll();
-      Logger.log(`${MESSAGES.FETCH_SUCCESS} All users fetched successfully`);
-      return { success: true, message: MESSAGES.FETCH_SUCCESS, data: users };
+      Logger.log(`Fetched all users successfully. Count: ${users.length}`);
+      return {
+        success: true,
+        message: MESSAGE.USER.SUCCESS.DATA_RETRIEVED,
+        data: users,
+      };
     } catch (error) {
-      Logger.error(`${MESSAGES.FETCH_FAILED} Error: ${error.message}`);
+      Logger.error('Failed to fetch users', error.stack);
       return {
         success: false,
-        message: MESSAGES.FETCH_FAILED,
+        message: MESSAGE.USER.ERROR.DATABASE_ERROR,
         error: error.message,
       };
     }
@@ -27,20 +33,22 @@ export class UsersService {
 
   async findOneByEmail(email: string) {
     try {
-      const user = (await this.usersProviders.findOne({ where: { email } }))!;
+      const user = await this.usersProviders.findOne({ where: { email } });
       if (!user) {
-        Logger.log(MESSAGES.USER_NOT_FOUND);
-        return { success: false, message: MESSAGES.USER_NOT_FOUND };
+        Logger.warn('User not found');
+        return { success: false, message: MESSAGE.USER.ERROR.USER_NOT_FOUND };
       }
-      Logger.log(`${MESSAGES.FETCH_SUCCESS} Email: ${email}`);
-      return { success: true, message: MESSAGES.FETCH_SUCCESS, data: user };
+      Logger.log('User found by email');
+      return {
+        success: true,
+        message: MESSAGE.USER.SUCCESS.DATA_RETRIEVED,
+        data: user,
+      };
     } catch (error) {
-      Logger.error(
-        `${MESSAGES.FETCH_FAILED} Email: ${email}. Error: ${error.message}`,
-      );
+      Logger.error('Failed to fetch user by email', error.stack);
       return {
         success: false,
-        message: MESSAGES.FETCH_FAILED,
+        message: MESSAGE.USER.ERROR.SERVER_ERROR,
         error: error.message,
       };
     }
@@ -50,18 +58,20 @@ export class UsersService {
     try {
       const user = await this.usersProviders.findOne({ where: { id } });
       if (!user) {
-        Logger.log('User not found! Check User Id');
-        return { success: false, message: 'User not found' };
+        Logger.warn('User not found');
+        return { success: false, message: MESSAGE.USER.ERROR.USER_NOT_FOUND };
       }
-      Logger.log(`${MESSAGES.FETCH_SUCCESS} ID: ${id}`);
-      return { success: true, message: MESSAGES.FETCH_SUCCESS, data: user };
+      Logger.log('User found by ID');
+      return {
+        success: true,
+        message: MESSAGE.USER.SUCCESS.DATA_RETRIEVED,
+        data: user,
+      };
     } catch (error) {
-      Logger.error(
-        `${MESSAGES.FETCH_FAILED} ID: ${id}. Error: ${error.message}`,
-      );
+      Logger.error('Failed to fetch user by ID', error.stack);
       return {
         success: false,
-        message: MESSAGES.FETCH_FAILED,
+        message: MESSAGE.USER.ERROR.SERVER_ERROR,
         error: error.message,
       };
     }
@@ -70,19 +80,17 @@ export class UsersService {
   async create(createUsersDto: CreateUserDto) {
     try {
       const user = await this.usersProviders.create(createUsersDto as Users);
-      Logger.log(
-        `${MESSAGES.USER_CREATED_SUCCESSFULLY} Email: ${createUsersDto.email}`,
-      );
+      Logger.log('User created successfully');
       return {
         success: true,
-        message: MESSAGES.USER_CREATED_SUCCESSFULLY,
+        message: MESSAGE.USER.SUCCESS.USER_CREATED,
         data: user,
       };
     } catch (error) {
-      Logger.error(`${MESSAGES.FAILED_TO_CREATE_USER} Error: ${error.message}`);
+      Logger.error('Failed to create user', error.stack);
       return {
         success: false,
-        message: MESSAGES.FAILED_TO_CREATE_USER,
+        message: MESSAGE.USER.ERROR.DATABASE_ERROR,
         error: error.message,
       };
     }
@@ -90,22 +98,23 @@ export class UsersService {
 
   async updateOneById(id: number, user: UpdateUserDto) {
     try {
-      const updatedUser = await this.usersProviders.update(user, {
+      const [updatedCount] = await this.usersProviders.update(user, {
         where: { id },
       });
-      Logger.log(`${MESSAGES.USER_UPDATED_SUCCESSFULLY} ID: ${id}`);
+      if (updatedCount === 0) {
+        Logger.warn('User not found for updating');
+        return { success: false, message: MESSAGE.USER.ERROR.USER_NOT_FOUND };
+      }
+      Logger.log('User updated successfully');
       return {
         success: true,
-        message: MESSAGES.USER_UPDATED_SUCCESSFULLY,
-        data: updatedUser,
+        message: MESSAGE.USER.SUCCESS.USER_UPDATED,
       };
     } catch (error) {
-      Logger.error(
-        `${MESSAGES.FAILED_TO_UPDATE_USER} ID: ${id}. Error: ${error.message}`,
-      );
+      Logger.error('Failed to update user', error.stack);
       return {
         success: false,
-        message: MESSAGES.FAILED_TO_UPDATE_USER,
+        message: MESSAGE.USER.ERROR.OPERATION_FAILED,
         error: error.message,
       };
     }
@@ -113,22 +122,21 @@ export class UsersService {
 
   async deleteOneById(id: number) {
     try {
-      const deletedUser = await this.usersProviders.destroy({
-        where: { id },
-      });
-      Logger.log(`${MESSAGES.USER_DELETED_SUCCESSFULLY} ID: ${id}`);
+      const deletedCount = await this.usersProviders.destroy({ where: { id } });
+      if (deletedCount === 0) {
+        Logger.warn('User not found for deletion');
+        return { success: false, message: MESSAGE.USER.ERROR.USER_NOT_FOUND };
+      }
+      Logger.log('User deleted successfully');
       return {
         success: true,
-        message: MESSAGES.USER_DELETED_SUCCESSFULLY,
-        data: deletedUser,
+        message: MESSAGE.USER.SUCCESS.USER_DELETED,
       };
     } catch (error) {
-      Logger.error(
-        `${MESSAGES.FAILED_TO_DELETE_USER} ID: ${id}. Error: ${error.message}`,
-      );
+      Logger.error('Failed to delete user', error.stack);
       return {
         success: false,
-        message: MESSAGES.FAILED_TO_DELETE_USER,
+        message: MESSAGE.USER.ERROR.OPERATION_FAILED,
         error: error.message,
       };
     }

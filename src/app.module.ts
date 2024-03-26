@@ -11,6 +11,9 @@ import { UsersController } from './modules/users/users.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
+import { OtpModule } from './modules/otp/otp.module';
+import { otpsRepository } from './modules/otp/otps.repository';
+import { OtpService } from './modules/otp/otp.service';
 
 @Module({
   imports: [
@@ -22,8 +25,16 @@ import { AuthService } from './modules/auth/auth.service';
     DatabaseModule,
     UsersModule,
     AuthModule,
+    OtpModule,
   ],
   controllers: [AppController, UsersController, AuthController],
-  providers: [...usersRepository, AppService, UsersService, AuthService],
+  providers: [
+    ...usersRepository,
+    ...otpsRepository,
+    AppService,
+    UsersService,
+    AuthService,
+    OtpService,
+  ],
 })
 export class AppModule {}

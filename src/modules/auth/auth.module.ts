@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
+import { OtpService } from '../otp/otp.service';
+import { otpsRepository } from '../otp/otps.repository';
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import { jwtConstants } from './constants';
       signOptions: { expiresIn: '200000s' },
     }),
   ],
-  providers: [AuthService],
+  providers: [AuthService, OtpService, ...otpsRepository],
   controllers: [AuthController],
   exports: [AuthService],
 })

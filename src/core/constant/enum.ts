@@ -8,3 +8,9 @@ export enum Gender {
   Female = 'female',
   Other = 'other',
 }
+
+export enum Type {
+  RESET = 'RESET',
+  FORGOT = 'FORGOT',
+  VERIFY = 'VERIFY',
+}
