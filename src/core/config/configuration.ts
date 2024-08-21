@@ -20,5 +20,11 @@ export default () => ({
     host: process.env.DB_HOST as string,
     port: parseInt(process.env.DB_PORT as string, 10) || 5432,
     dialect: process.env.DB_DIALECT as Dialect,
+    dialectOptions: {
+      ssl: {
+        require: true, // Enforces SSL
+        rejectUnauthorized: false, // Set to false if you don't have a CA certificate
+      },
+    },
   } as DatabaseConfig,
 });

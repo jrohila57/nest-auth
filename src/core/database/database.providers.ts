@@ -14,8 +14,8 @@ export const databaseProviders = [
         const config: SequelizeOptions = configuration().database;
         const sequelize = new Sequelize(config);
         sequelize.addModels([Users, Otp]);
-        await sequelize.authenticate({ logging: true });
-        await sequelize.sync();
+        await sequelize.authenticate();
+        // await sequelize.sync();
         Logger.log(MESSAGE.USER.SUCCESS.DATA_RETRIEVED, DATABASE);
         return sequelize;
       } catch (error: any) {
